@@ -1,0 +1,489 @@
+{% comment %} <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ exam.title }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface"></script>
+</head>
+<body class="bg-gray-100 text-gray-900">
+    <div class="container mx-auto py-8">
+        <!-- Camera Section -->
+        <div class="flex">
+            <div class="w-1/4">
+                <video id="cameraFeed" autoplay muted class="rounded shadow"></video>
+                <div id="presenceMessage" class="mt-4 text-center text-sm font-semibold text-red-600">
+                    Checking for human presence...
+                </div>
+            </div>
+            <div class="w-3/4">
+                <!-- Exam Title and Timer -->
+                <div class="flex justify-between items-center mb-6">
+                    <h1 class="text-2xl font-bold">{{ exam.title }}</h1>
+                    <div id="timer" class="text-xl font-semibold text-red-600"></div>
+                </div>
+
+                <!-- Warning Alert (hidden by default) -->
+                <div id="warningAlert" class="hidden mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded" role="alert">
+                    <strong>Malpractice detected!</strong> Please avoid further malpractice.
+                </div>
+
+                <!-- Exam Form -->
+                <form id="examForm" method="POST">
+                    {% csrf_token %}
+                    <div id="questions" class="space-y-6">
+                        {% for question in questions %}
+                        <div class="bg-white p-6 rounded shadow">
+                            <h3 class="font-semibold text-lg mb-2">Question {{ forloop.counter }}: {{ question.question_text }}</h3>
+                            <textarea name="responses" data-question-id="{{ question.id }}" rows="4" class="w-full p-2 border rounded" required></textarea>
+                            <input type="hidden" name="question_ids" value="{{ question.id }}">
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Finish Exam Button -->
+                    <div class="mt-6 flex justify-between">
+                        <button type="button" id="finishButton" class="bg-yellow-500 text-white font-bold py-2 px-4 rounded hover:bg-yellow-600">Finish Exam</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const examForm = document.getElementById('examForm');
+        const warningAlert = document.getElementById('warningAlert');
+        const timerElement = document.getElementById('timer');
+        const cameraFeed = document.getElementById('cameraFeed');
+        const presenceMessage = document.getElementById('presenceMessage');
+        const minTypingDelay = 100; // in milliseconds
+        const minTypingLength = 20; // minimum character length to start tracking irregularities
+        const timeLimit = {{ exam.time_limit }} * 60; // Convert minutes to seconds
+        let lastInputLength = {};
+        let lastTypingTime = {};
+        let warningCount = 0;
+        let timeRemaining = timeLimit;
+
+        // Initialize camera
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then((stream) => {
+                cameraFeed.srcObject = stream;
+                detectPresence(); 
+            })
+            .catch((error) => {
+                console.error("Camera access denied:", error);
+                incrementWarningCount("Malpractice detected! Camera not accessible.");
+            });
+
+        async function detectPresence() {
+            const model = await blazeface.load();
+            const video = cameraFeed;
+
+            async function checkPresence() {
+                const predictions = await model.estimateFaces(video, false);
+
+                if (predictions.length > 0) {
+               
+                    presenceMessage.textContent = "Face focused in camera.";
+                    presenceMessage.classList.replace('text-red-600', 'text-green-600');
+                } else {
+               
+                    presenceMessage.textContent = "Malicious Eye Movements.";
+                    presenceMessage.classList.replace('text-green-600', 'text-red-600');
+                    incrementWarningCount("Malpractice detected! No human in front of the camera.");
+                }
+
+                // Check presence again in 1 second
+                setTimeout(checkPresence, 1000);
+            }
+
+            checkPresence();
+        }
+
+        // Detect if user exits the screen
+        let presenceInterval = setInterval(() => {
+            if (!document.hasFocus()) {
+                incrementWarningCount("Malpractice detected! Screen exited.");
+            }
+        }, 1000); // Check every second
+
+        // Prohibit page refresh
+        document.addEventListener("keydown", function (e) {
+            if ((e.key === "F5") || (e.key === "r" && (e.ctrlKey || e.metaKey))) {
+                e.preventDefault();
+            }
+        });
+
+        // Timer countdown
+        const timerInterval = setInterval(() => {
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            timerElement.textContent = `Time Left: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+            timeRemaining--;
+
+            if (timeRemaining < 0) {
+                clearInterval(timerInterval);
+                submitExam(); // Automatically submit when time is up
+            }
+        }, 1000);
+
+        // Paste detection
+        examForm.addEventListener('paste', function () {
+            incrementWarningCount("Malpractice detected! Avoid pasting.");
+        });
+
+        // Typing irregularity detection
+        examForm.addEventListener('input', function (e) {
+            const textarea = e.target;
+            const questionId = textarea.dataset.questionId;
+            const currentTime = new Date().getTime();
+            
+            if (!lastInputLength[questionId]) {
+                lastInputLength[questionId] = textarea.value.length;
+                lastTypingTime[questionId] = currentTime;
+                return;
+            }
+
+            const currentLength = textarea.value.length;
+            const timeDiff = currentTime - lastTypingTime[questionId];
+
+            if (currentLength > minTypingLength) { 
+                const typingDifference = currentLength - lastInputLength[questionId];
+                if (typingDifference > 500 || (timeDiff < minTypingDelay && typingDifference > 0)) {
+                    incrementWarningCount("Malpractice detected! Irregular typing detected.");
+                }
+            }
+
+            lastInputLength[questionId] = currentLength;
+            lastTypingTime[questionId] = currentTime;
+        });
+``('visibilitychange', function () {
+            if (document.visibilityState === 'hidden') {
+                incrementWarningCount("Malpractice detected! Tab switched or browser minimized.");
+            }
+        });
+
+        // Detect window blur (e.g., switching tabs or opening a new window)
+        window.addEventListener('blur', function () {
+            incrementWarningCount("Malpractice detected! Browser lost focus.");
+        });
+
+        function incrementWarningCount(message) {
+            warningCount++;
+            warningAlert.textContent = message;
+            warningAlert.classList.remove('hidden');
+            setTimeout(() => warningAlert.classList.add('hidden'), 2000);
+        }
+
+        // Handle "Finish Exam" button click
+        document.getElementById('finishButton').addEventListener('click', function () {
+            if (confirm("Are you sure you want to finish the exam?")) {
+                submitExam(); // Submit the exam on finish button click
+            }
+        });
+
+        function submitExam() {
+            clearInterval(timerInterval);
+            clearInterval(presenceInterval);
+
+            const formData = new FormData(examForm);
+            formData.append('warning_count', warningCount); // Include malpractice warning count
+
+            fetch("{% url 'take_exam' exam.id  %}", {
+                method: "POST",
+                body: formData
+            }).then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            }).then(data => {
+                if (data.redirect_url) {
+                    window.location.href = data.redirect_url; // Redirect to exam completed page for all users
+                } else {
+                    console.error("Unexpected response format:", data);
+                }
+            }).catch(error => {
+                console.error("Error submitting exam:", error);
+            });
+        }
+    </script>
+</body>
+</html> {% endcomment %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ exam.title }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface"></script>
+</head>
+<body class="bg-gray-100 text-gray-900">
+    <div class="container mx-auto py-8">
+        <!-- Header with exam info -->
+        <div class="bg-white p-4 rounded-lg shadow-md mb-6">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-2xl font-bold text-blue-800">{{ exam.title }}</h1>
+                    <p class="text-gray-600">Welcome, {{ jobseeker.name }}</p>
+                </div>
+                <div id="timer" class="text-xl font-semibold text-red-600 bg-red-100 p-3 rounded-lg"></div>
+            </div>
+        </div>
+        
+        <!-- Main content area -->
+        <div class="flex flex-col md:flex-row gap-6">
+            <!-- Camera monitoring section -->
+            <div class="w-full md:w-1/4">
+                <div class="bg-white p-4 rounded-lg shadow-md">
+                    <h2 class="text-lg font-semibold mb-2">Proctoring Status</h2>
+                    <div class="relative">
+                        <!-- Remove the video element -->
+                        <div class="w-full h-32 bg-gray-200 rounded-lg flex items-center justify-center">
+                            <svg class="w-10 h-10 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <div id="presenceMessage" class="mt-2 text-center text-sm font-semibold bg-green-100 p-2 rounded">
+                            Proctoring active
+                        </div>
+                    </div>
+                    
+                    <!-- Status indicators (keep these) -->
+                    <div class="mt-4 space-y-2">
+                        <div class="flex items-center">
+                            <div id="faceStatus" class="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
+                            <span class="text-sm">Face Detection</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div id="eyeStatus" class="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
+                            <span class="text-sm">Eye Tracking</span>
+                        </div>
+                        <div class="flex items-center">
+                            <div id="mobileStatus" class="w-3 h-3 rounded-full bg-green-500 mr-2"></div>
+                            <span class="text-sm">No Mobile</span>
+                        </div>
+                    </div>
+                </div>                
+                <!-- Warning panel -->
+                <div id="warningAlert" class="mt-4 hidden bg-red-100 border-l-4 border-red-500 text-red-700 p-4 rounded shadow-md" role="alert">
+                    <div class="flex">
+                        <div class="py-1">
+                            <svg class="w-6 h-6 mr-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <p id="warningText" class="font-bold">Malpractice Warning!</p>
+                            <p id="warningDetails" class="text-sm">Please follow exam guidelines.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Exam content section -->
+            <div class="w-full md:w-3/4">
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <h2 class="text-xl font-semibold mb-4">Exam Questions</h2>
+                    
+                    <form id="examForm" method="POST">
+                        {% csrf_token %}
+                        <input type="hidden" name="warning_count" id="warningCount" value="0">
+                        
+                        <div id="questions" class="space-y-8">
+                            {% for question in questions %}
+                            <div class="p-4 border border-gray-200 rounded-lg">
+                                <h3 class="font-medium text-lg mb-3">Question {{ forloop.counter }}:</h3>
+                                <div class="mb-4 bg-gray-50 p-3 rounded">{{ question.question_text }}</div>
+                                <textarea 
+                                    name="responses" 
+                                    data-question-id="{{ question.id }}" 
+                                    rows="6" 
+                                    class="w-full p-3 border rounded-lg focus:ring focus:ring-blue-200 focus:border-blue-500" 
+                                    placeholder="Type your answer here..." 
+                                    required
+                                ></textarea>
+                                <input type="hidden" name="question_ids" value="{{ question.id }}">
+                                <div class="text-right text-sm text-gray-500 mt-1">
+                                    Max marks: {{ question.max_marks }}
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- Submit button -->
+                        <div class="mt-8 flex justify-between items-center">
+                            <div class="text-sm text-gray-600">
+                                <span class="font-semibold">Important:</span> The exam is monitored. Any malpractice will be recorded.
+                            </div>
+                            <button 
+                                type="button" 
+                                id="finishButton" 
+                                class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                            >
+                                Submit Exam
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const examForm = document.getElementById('examForm');
+        const warningAlert = document.getElementById('warningAlert');
+        const warningText = document.getElementById('warningText');
+        const warningDetails = document.getElementById('warningDetails');
+        const timerElement = document.getElementById('timer');
+        const cameraFeed = document.getElementById('cameraFeed');
+        const presenceMessage = document.getElementById('presenceMessage');
+        const faceStatus = document.getElementById('faceStatus');
+        const eyeStatus = document.getElementById('eyeStatus');
+        const mobileStatus = document.getElementById('mobileStatus');
+        const warningCountElement = document.getElementById('warningCount');
+        
+        // Constants for monitoring
+        const minTypingDelay = 100; // in milliseconds
+        const minTypingLength = 20; // minimum character length to start tracking irregularities
+        const timeLimit = {{ exam.time_limit }} * 60; // Convert minutes to seconds
+        
+        // Variables for tracking
+        let lastInputLength = {};
+        let lastTypingTime = {};
+        let warningCount = 0;
+        let timeRemaining = timeLimit;
+        let blazeFaceModel = null;
+        
+        // Initialize camera
+        let mediaRecorder;
+        let recordedChunks = [];
+
+
+        // Timer countdown
+        const timerInterval = setInterval(() => {
+            const minutes = Math.floor(timeRemaining / 60);
+            const seconds = timeRemaining % 60;
+            timerElement.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeRemaining <= 300) {  // 5 minutes remaining
+                timerElement.classList.add('animate-pulse');
+            }
+            
+            timeRemaining--;
+
+            if (timeRemaining < 0) {
+                clearInterval(timerInterval);
+                submitExam(); // Automatically submit when time is up
+            }
+        }, 1000);
+
+        // Paste detection
+        document.addEventListener('paste', function(e) {
+            incrementWarningCount("Content pasting detected");
+        });
+
+        // Typing irregularity detection
+        examForm.addEventListener('input', function(e) {
+            if (e.target.tagName === 'TEXTAREA') {
+                const textarea = e.target;
+                const questionId = textarea.dataset.questionId;
+                const currentTime = new Date().getTime();
+                
+                if (!lastInputLength[questionId]) {
+                    lastInputLength[questionId] = textarea.value.length;
+                    lastTypingTime[questionId] = currentTime;
+                    return;
+                }
+
+                const currentLength = textarea.value.length;
+                const timeDiff = currentTime - lastTypingTime[questionId];
+
+                if (currentLength > minTypingLength) { 
+                    const typingDifference = currentLength - lastInputLength[questionId];
+                    if (typingDifference > 10 && timeDiff < minTypingDelay) {
+                        incrementWarningCount("Suspicious typing pattern detected");
+                    }
+                }
+
+                lastInputLength[questionId] = currentLength;
+                lastTypingTime[questionId] = currentTime;
+            }
+        });
+
+        // Detect window blur (e.g., switching tabs or opening a new window)
+        window.addEventListener('blur', function() {
+            incrementWarningCount("Browser lost focus");
+        });
+
+        // Prohibit page refresh
+        document.addEventListener("keydown", function(e) {
+            if ((e.key === "F5") || (e.key === "r" && (e.ctrlKey || e.metaKey))) {
+                e.preventDefault();
+                incrementWarningCount("Page refresh attempted");
+            }
+        });
+
+        function incrementWarningCount(message) {
+            warningCount++;
+            warningCountElement.value = warningCount;
+            
+            warningText.textContent = "Malpractice Warning!";
+            warningDetails.textContent = message;
+            warningAlert.classList.remove('hidden');
+            
+            // Hide the warning after 3 seconds
+            setTimeout(() => {
+                warningAlert.classList.add('hidden');
+            }, 3000);
+        }
+
+        // Handle "Finish Exam" button click
+        document.getElementById('finishButton').addEventListener('click', function() {
+            if (confirm("Are you sure you want to finish the exam? This action cannot be undone.")) {
+                submitExam();
+            }
+        });
+
+        function submitExam() {
+            clearInterval(timerInterval);
+            
+            const formData = new FormData(examForm);
+            formData.append('warning_count', warningCount);
+
+            fetch(window.location.href, {
+                method: "POST",
+                body: formData
+            }).then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            }).then(data => {
+                if (data.redirect_url) {
+                    window.location.href = data.redirect_url;
+                } else {
+                    console.error("Unexpected response format:", data);
+                }
+            }).catch(error => {
+                console.error("Error submitting exam:", error);
+                alert("There was an error submitting your exam. Please try again or contact support.");
+            });
+        }
+
+        // Confirm before leaving page
+        window.addEventListener('beforeunload', function(e) {
+            if (timeRemaining > 0) {
+                e.preventDefault();
+                e.returnValue = '';
+                return '';
+            }
+        });
+    </script>
+</body>
+</html>

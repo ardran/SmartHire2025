@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>JobSeeker Register</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+
+  <div class="flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
+      <h2 class="text-2xl font-bold text-center text-blue-700">Jobseeker Registration</h2>
+      <p class="text-center text-gray-500 mb-6">Join us and start your journey to finding your dream job</p>
+
+      <form action="{% url 'jobseeker-register' %}" method="POST" class="space-y-4">
+        {% csrf_token %}
+        
+        <!-- Name Field -->
+        <div>
+            <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+            <input type="text" name="name" id="name" required 
+                   class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                   pattern="^[a-zA-Z\s]+$" 
+                   title="Full Name must contain only letters and spaces.">
+        </div>
+    
+        <!-- Email Field -->
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+          <input type="email" name="email" id="email" required
+                 class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                 title="Please enter a valid email address ending with .com."
+                 pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.com$">
+      </div>
+      
+      
+    
+        <!-- Password Field -->
+        <div>
+            <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+            <input type="password" name="password" id="password" required 
+                   class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                   pattern="^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$" 
+                   title="Password must be at least 8 characters long, contain a letter, a number, and a special character.">
+        </div>
+    
+        <!-- Phone Number Field -->
+        <div>
+            <label for="number" class="block text-sm font-medium text-gray-700">Phone Number</label>
+            <input type="tel" name="number" id="number" required 
+                   class="mt-1 block w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500"
+                   pattern="^\d{10}$" 
+                   title="Phone Number must be exactly 10 digits.">
+        </div>
+    
+        <!-- Submit Button -->
+        <button type="submit" class="w-full bg-blue-700 text-white py-3 rounded-lg hover:bg-blue-800 transition duration-300">
+            Register
+        </button>
+    </form>
+    
+
+      <!-- Login Link -->
+      <p class="text-center text-gray-600 mt-4">
+        Already have an account? 
+        <a href="{% url 'jobseeker-login' %}" class="text-blue-600 hover:underline">Log in</a>
+      </p>
+    </div>
+  </div>
+
+</body>
+</html>

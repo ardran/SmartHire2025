@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>JobProvider - Job Provider Dashboard</title>
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+        <script>
+            // Toggle Navbar for mobile view
+            function toggleNavbar() {
+                document.getElementById('mobile-menu').classList.toggle('hidden');
+            }
+        </script>
+    </head>
+    <body class="bg-white text-black">
+
+        <!-- Hero Section (Full-Screen) -->
+        <section class="relative h-screen bg-cover bg-center" style="background-image: url('https://images.pexels.com/photos/3184325/pexels-photo-3184325.jpeg');">
+            <!-- Overlay for Blending -->
+            <div class="absolute inset-0 bg-blue-900 opacity-60"></div>
+
+            <!-- Navbar -->
+            <nav class="fixed w-full z-10 top-0 opacity-90 shadow">
+                <div class="container mx-auto flex flex-wrap items-center justify-between p-4">
+                    <div class="flex items-center">
+                        <a href="" class="text-white font-bold text-2xl">JobProvider</a>
+                    </div>
+
+                    <!-- Toggle Button for Mobile Menu -->
+                    <button class="text-white md:hidden" onclick="toggleNavbar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+
+                    <!-- Desktop Navbar Links -->
+                    <div class="hidden md:flex md:items-center md:space-x-6">
+                        <a href="/jobproviderprofile/" class="text-gray-300 hover:text-white">Profile</a>
+                        <a href="/PostJob/" class="text-gray-300 hover:text-white">Post Job</a>
+                        <a href="/viewjobs/" class="text-gray-300 hover:text-white">Manage Jobs</a>
+                        <a href="/viewapplication/" class="text-gray-300 hover:text-white">View Application</a>
+                        <a href="/list-exams/" class="text-gray-300 hover:text-white">List Exams</a>
+                        <a href="/logout/" class="text-gray-300 hover:text-white">Logout</a>
+                    </div>
+
+                    <!-- Mobile Menu -->
+                    <div id="mobile-menu" class="hidden md:hidden w-full bg-blue-900 text-white mt-4">
+                        <a href="/jobseekprofile/" class="block px-4 py-2 hover:bg-blue-800">Profile</a>
+                        <a href="/PostJob/" class="block px-4 py-2 hover:bg-blue-800">Post Job</a>
+                        <a href="/viewjobs/" class="block px-4 py-2 hover:bg-blue-800">Manage Jobs</a>
+                        <a href="#" class="block px-4 py-2 hover:bg-blue-800">Logout</a>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Hero Content -->
+            <div class="relative h-full flex items-center justify-center text-center text-white px-4">
+                <div>
+                    <h2 class="text-3xl md:text-4xl font-bold">Welcome Back, {{user.name}}</h2>
+                    <p class="mt-4 text-md md:text-lg">Find the best candidates for your organization. Post jobs and manage applications easily.</p>
+                    <a href="/PostJob/" class="mt-6 inline-block bg-yellow-400 text-black px-4 py-2 md:px-6 md:py-3 rounded hover:bg-yellow-500">Explore Features</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="py-12 px-4 bg-white">
+            <div class="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <img src="https://images.pexels.com/photos/3184360/pexels-photo-3184360.jpeg" alt="About Project" class="w-full rounded-lg">
+                </div>
+                <div class="flex flex-col justify-center">
+                    <h3 class="text-2xl md:text-3xl font-bold text-blue-700">About JobProvider Project</h3>
+                    <p class="mt-4 text-sm md:text-base">
+                        JobProvider is designed to facilitate a seamless connection between employers and potential candidates. This platform empowers job providers to post job listings, screen applicants, and manage their recruitment process with ease. Our mission is to simplify hiring by providing a comprehensive dashboard tailored to job providers’ needs, ensuring the right talent is just a click away.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard Features Section -->
+        <section id="features" class="py-12 px-4 bg-yellow-400 text-black">
+            <div class="container mx-auto text-center">
+                <h3 class="text-2xl md:text-3xl font-bold">Dashboard Features</h3>
+                <p class="mt-2 mb-8 text-sm md:text-base">Tools and features designed to enhance your hiring process.</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Feature Card 1 -->
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <i class="fas fa-bullhorn text-blue-700 text-2xl md:text-3xl mb-4"></i>
+                        <h4 class="text-lg md:text-xl font-bold">Post Jobs</h4>
+                        <p class="mt-2 text-sm md:text-base">Easily create and post job openings to attract qualified candidates.</p>
+                    </div>
+                    <!-- Feature Card 2 -->
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <i class="fas fa-users text-blue-700 text-2xl md:text-3xl mb-4"></i>
+                        <h4 class="text-lg md:text-xl font-bold">Manage Applications</h4>
+                        <p class="mt-2 text-sm md:text-base">View applications and shortlist candidates for further interviews.</p>
+                    </div>
+                    <!-- Feature Card 3 -->
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <i class="fas fa-tasks text-blue-700 text-2xl md:text-3xl mb-4"></i>
+                        <h4 class="text-lg md:text-xl font-bold">Track Job Performance</h4>
+                        <p class="mt-2 text-sm md:text-base">Monitor views and application statistics to improve job listings.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="bg-black text-white py-4 text-center">
+            <p>&copy; 2024 JobProvider. All rights reserved.</p>
+        </footer>
+
+    </body>
+</html>

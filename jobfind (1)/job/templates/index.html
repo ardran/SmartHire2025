@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>SmartHire</title>
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+        <script>
+            // Toggle Navbar for mobile view
+            function toggleNavbar() {
+                document.getElementById('mobile-menu').classList.toggle('hidden');
+            }
+            // Toggle individual dropdowns for both desktop and mobile
+            function toggleDropdown(dropdownId) {
+                document.getElementById(dropdownId).classList.toggle('hidden');
+            }
+        </script>
+    </head>
+    <body class="bg-white text-black">
+
+        <!-- Hero Section (Full-Screen) -->
+        <section class="relative h-screen bg-cover bg-center" style="background-image: url('https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg');">
+            <!-- Overlay for Blending -->
+            <div class="absolute inset-0 bg-blue-900 opacity-60"></div>
+
+            <!-- Navbar -->
+            <nav class="fixed w-full z-10 top-0 opacity-90 shadow">
+                <div class="container mx-auto flex flex-wrap items-center justify-between p-4">
+                    <div class="flex items-center">
+                        <a href="#" class="text-white font-bold text-2xl">SmartHire</a>
+                    </div>
+
+                    <!-- Toggle Button for Mobile Menu -->
+                    <button class="text-white md:hidden" onclick="toggleNavbar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+
+                    <!-- Desktop Navbar Links -->
+                    <div class="hidden md:flex md:items-center md:space-x-6">
+                        <a href="#" class="text-gray-300 hover:text-white">Home</a>
+
+                        <!-- Register Dropdown for Desktop -->
+                        <div class="relative">
+                            <button onclick="toggleDropdown('desktop-register-dropdown')" class="text-gray-300 hover:text-white">Register <i class="fas fa-chevron-down ml-1"></i></button>
+                            <div id="desktop-register-dropdown" class="hidden absolute bg-white text-black mt-2 rounded shadow-md w-40 z-20">
+                                <a href="/jobseeker-register/" class="block px-4 py-2 hover:bg-gray-200">Jobseeker Register</a>
+                                <a href="/jobproviderreg/" class="block px-4 py-2 hover:bg-gray-200">Job Provider Register</a>
+                            </div>
+                        </div>
+
+                        <!-- Login Dropdown for Desktop -->
+                        <div class="relative">
+                            <button onclick="toggleDropdown('desktop-login-dropdown')" class="text-gray-300 hover:text-white">Login <i class="fas fa-chevron-down ml-1"></i></button>
+                            <div id="desktop-login-dropdown" class="hidden absolute bg-white text-black mt-2 rounded shadow-md w-40 z-20">
+                                <a href="/jobseeker-login/" class="block px-4 py-2 hover:bg-gray-200">Jobseeker Login</a>
+                                <a href="/jobproviderlogin/" class="block px-4 py-2 hover:bg-gray-200">Job Provider Login</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mobile Menu -->
+                    <div id="mobile-menu" class="hidden md:hidden w-full bg-blue-900 text-white mt-4">
+                        <a href="#" class="block px-4 py-2 hover:bg-blue-800">Home</a>
+
+                        <!-- Register Dropdown for Mobile -->
+                        <div class="relative">
+                            <button onclick="toggleDropdown('mobile-register-dropdown')" class="w-full text-left px-4 py-2 hover:bg-blue-800">Register <i class="fas fa-chevron-down ml-1"></i></button>
+                            <div id="mobile-register-dropdown" class="hidden bg-white text-black mt-1 rounded shadow-md w-full">
+                                <a href="/jobseeker-register/" class="block px-4 py-2 hover:bg-gray-200">Jobseeker Register</a>
+                                <a href="/jobproviderreg/" class="block px-4 py-2 hover:bg-gray-200">Job Provider Register</a>
+                            </div>
+                        </div>
+
+                        <!-- Login Dropdown for Mobile -->
+                        <div class="relative">
+                            <button onclick="toggleDropdown('mobile-login-dropdown')" class="w-full text-left px-4 py-2 hover:bg-blue-800">Login <i class="fas fa-chevron-down ml-1"></i></button>
+                            <div id="mobile-login-dropdown" class="hidden bg-white text-black mt-1 rounded shadow-md w-full">
+                                <a href="/jobseeker-login/" class="block px-4 py-2 hover:bg-gray-200">Jobseeker Login</a>
+                                <a href="/jobproviderlogin/" class="block px-4 py-2 hover:bg-gray-200">Job Provider Login</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Hero Content -->
+            <div class="relative h-full flex items-center justify-center text-center text-white px-4">
+                <div>
+                    <h2 class="text-3xl md:text-4xl font-bold">SmartHire - Smarter AI, Better Hires!</h2>
+                    <p class="mt-4 text-md md:text-lg">Connecting you with opportunities that fit your skills and goals.</p>
+                    
+                </div>
+            </div>
+        </section>
+
+        <section id="about" class="py-12 px-4 bg-white">
+            <div
+                class="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <img
+                        src="https://images.pexels.com/photos/3184357/pexels-photo-3184357.jpeg"
+                        alt="About Us" class="w-full rounded-lg">
+                </div>
+                <div class="flex flex-col justify-center">
+                    <h3
+                        class="text-2xl md:text-3xl font-bold text-blue-700">About
+                        SmartHire</h3>
+                    <p class="mt-4 text-sm md:text-base">At SmartHire, our
+                        mission is to help you find the best job opportunities
+                        that align with your ambitions. Join us and kickstart
+                        your journey towards a rewarding career.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="team" class="py-8 px-4 bg-yellow-400 text-black">
+            <div class="container mx-auto text-center">
+                <h3 class="text-2xl md:text-3xl font-bold">Meet Our Team</h3>
+                <p class="mt-2 mb-6 text-sm md:text-base">Creators of SmartHire</p>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-2 items-center">
+                    <!-- Team Member 1 -->
+                    <div class="bg-white p-2 rounded-lg shadow-md text-center w-full">
+                        <img src="media/IMG_6954.jpg" alt="ARDRA" class="w-24 h-24 mx-auto rounded-full mb-2">
+                        <h4 class="text-sm font-bold">A ARDRA NAIR</h4>
+                        
+                        <a href="https://www.linkedin.com/in/aardranair?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app" class="text-blue-600 text-xs mt-1 block hover:underline">Connect on LinkedIn</a>
+                    </div>
+                    <!-- Team Member 2 -->
+                    <div class="bg-white p-2 rounded-lg shadow-md text-center w-full">
+                        <img src="media/20240307_104436.jpg" alt="AISWARYA CHANDRAN" class="w-24 h-24 mx-auto rounded-full mb-2">
+                        <h4 class="text-sm font-bold">AISWARYA CHANDRAN</h4>
+                        
+                        <a href="https://www.linkedin.com/in/aiswarya-chandran-235261255?utm_source=share&utm_campaign=share_via&utm_content=profile&utm_medium=ios_app" class="text-blue-600 text-xs mt-1 block hover:underline">Connect on LinkedIn</a>
+                    </div>
+                    <!-- Team Member 3 -->
+                    <div class="bg-white p-2 rounded-lg shadow-md text-center w-full">
+                        <img src="\media/PHOTO-2025-01-22-18-24-29.jpg" alt="APARNA MENON" class="w-24 h-24 mx-auto rounded-full mb-2">
+                        <h4 class="text-sm font-bold">APARNA MENON</h4>
+                    
+                        <a href="http://linkedin.com/in/aparnnaM" class="text-blue-600 text-xs mt-1 block hover:underline">Connect on LinkedIn</a>
+                    </div>
+                    <!-- Team Member 4 -->
+                    <div class="bg-white p-2 rounded-lg shadow-md text-center w-full">
+                        <img src="media/IMG_8919.jpg" alt="GAGAN UDYUTH" class="w-24 h-24 mx-auto rounded-full mb-2">
+                        <h4 class="text-sm font-bold">GAGAN UDYUTH</h4>
+                       
+                        <a href="https://www.linkedin.com/in/gagan-udyuth-29b3b9318" class="text-blue-600 text-xs mt-1 block hover:underline">Connect on LinkedIn</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+
+        <!-- Contact Section -->
+
+        <!-- Footer -->
+        <footer class="bg-black text-white py-4 text-center">
+            <p>&copy; 2024 SmartHire. All rights reserved.</p>
+        </footer>
+
+        <script>
+            // Toggle individual dropdowns for mobile
+            function toggleDropdown(dropdownId) {
+                document.getElementById(dropdownId).classList.toggle('hidden');
+            }
+        </script>
+
+    </body>
+</html>

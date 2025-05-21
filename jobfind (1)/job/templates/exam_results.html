@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Results - {{ exam.title }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        /* Modal background */
+        .modal-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+        }
+
+        /* Modal container */
+        .modal-container {
+            background: #fff;
+            padding: 1.5rem;
+            border-radius: 8px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        /* Close button */
+        .close-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            font-size: 1.25rem;
+            color: #6b7280;
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        function openModal(content) {
+            document.getElementById("modal-content").innerText = content;
+            document.getElementById("modal-bg").style.display = "flex";
+        }
+
+        function closeModal() {
+            document.getElementById("modal-bg").style.display = "none";
+        }
+    </script>
+</head>
+<body class="bg-gray-100 text-gray-900">
+    <nav class="bg-blue-600 text-white py-4 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="" class="text-2xl font-bold">SmartHire</a>
+            <ul class="flex space-x-4">
+                <li><a href="/jobprovideindex/" class="hover:text-yellow-300">Home</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container mx-auto py-8">
+        <h1 class="text-2xl font-bold mb-4">{{ exam.title }} Results</h1>
+        
+        {% if answers %}
+        <form method="POST">
+            {% csrf_token %}
+            <table class="table-auto min-w-full bg-white border border-gray-200 rounded-lg shadow">
+                <thead class="bg-gray-200 text-gray-700">
+                    <tr>
+                        <th class="py-2 px-4 text-left">Jobseeker</th>
+                        <th class="py-2 px-4 text-left">Question</th>
+                        <th class="py-2 px-4 text-left">Answer</th>
+                        <th class="py-2 px-4 text-left">Exam Log</th>
+                        <th class="py-2 px-4 text-left">Marks Scored</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for answer in answers %}
+                    <tr class="border-b hover:bg-gray-50 transition">
+                        <td class="py-3 px-4">{{ answer.jobseeker.name }}</td>
+                        <td class="py-3 px-4">{{ answer.exam_question.question_text }}</td>
+                        <td class="py-3 px-4">
+                            <div class="truncate-text">{{ answer.answer|truncatewords:5 }}</div>
+                            <button type="button" onclick="openModal(`{{ answer.answer }}`)" class="text-blue-600 underline ml-2">
+                                Read More
+                            </button>
+                        </td>
+                        <td class="py-3 px-4">{{ answer.exam_log }}</td>
+                        <td class="py-3 px-4">
+                            <input type="number" name="marks_{{ answer.id }}" value="{{ answer.marks_scored }}" class="w-20 p-2 border rounded" aria-label="Marks for {{ answer.jobseeker.name }}">
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <button type="submit" class="mt-4 bg-blue-500 text-white font-bold py-2 px-4 rounded hover:bg-blue-600">
+                Save Marks
+            </button>
+        </form>
+        {% else %}
+        <p class="text-center">No answers found for this exam.</p>
+        {% endif %}
+    </div>
+
+    <!-- Modal Background -->
+    <div id="modal-bg" class="modal-bg" onclick="closeModal()">
+        <div class="modal-container" onclick="event.stopPropagation();">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h2 class="text-xl font-bold mb-4 text-gray-800">Full Answer</h2>
+            <p id="modal-content" class="text-gray-700 leading-relaxed"></p>
+        </div>
+    </div>
+</body>
+</html>

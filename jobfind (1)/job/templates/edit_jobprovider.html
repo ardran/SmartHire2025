@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Job Provider</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+
+    <div class="container mx-auto p-6">
+        <h1 class="text-2xl font-bold mb-4">Edit Job Provider</h1>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-4">
+                <label class="block text-gray-700" for="name">Name</label>
+                <input type="text" name="name" id="name" value="{{ jobprovider.name }}" class="border border-gray-300 p-2 rounded w-full" required>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700" for="email">Email</label>
+                <input type="email" name="email" id="email" value="{{ jobprovider.email }}" class="border border-gray-300 p-2 rounded w-full" required>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700" for="phone_number">Phone Number</label>
+                <input type="text" name="phone_number" id="phone_number" value="{{ jobprovider.phone_number }}" class="border border-gray-300 p-2 rounded w-full" required>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700" for="company_name">Company Name</label>
+                <input type="text" name="company_name" id="company_name" value="{{ jobprovider.company_name }}" class="border border-gray-300 p-2 rounded w-full" required>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700" for="company_description">Company Description</label>
+                <textarea name="company_description" id="company_description" class="border border-gray-300 p-2 rounded w-full">{{ profile.company_description }}</textarea>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700" for="address">Address</label>
+                <textarea name="address" id="address" class="border border-gray-300 p-2 rounded w-full">{{ profile.address }}</textarea>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700" for="company_logo">Company Logo</label>
+                <input type="file" name="company_logo" id="company_logo" class="border border-gray-300 p-2 rounded w-full">
+                {% if profile.company_logo %}
+                <img src="{{ profile.company_logo.url }}" alt="Current Logo" class="mt-2 w-32">
+                {% endif %}
+            </div>
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Update Job Provider</button>
+            <a href="{% url 'admin_jobproviders' %}" class="ml-4 inline-block text-blue-500 hover:underline">Cancel</a>
+        </form>
+    </div>
+
+</body>
+</html>

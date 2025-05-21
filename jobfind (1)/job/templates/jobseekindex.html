@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>JobSeeker - Dashboard</title>
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+        <script>
+            // Toggle Navbar for mobile view
+            function toggleNavbar() {
+                document.getElementById('mobile-menu').classList.toggle('hidden');
+            }
+            // Toggle individual dropdowns for mobile
+            function toggleDropdown(dropdownId) {
+                document.getElementById(dropdownId).classList.toggle('hidden');
+            }
+        </script>
+    </head>
+    <body class="bg-white text-black">
+
+        <!-- Hero Section (Full-Screen) -->
+        <section class="relative h-screen bg-cover bg-center" style="background-image: url('https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg');">
+            <!-- Overlay for Blending -->
+            <div class="absolute inset-0 bg-blue-900 opacity-60"></div>
+
+            <!-- Navbar -->
+            <nav class="fixed w-full z-10 top-0 opacity-90 shadow">
+                <div class="container mx-auto flex flex-wrap items-center justify-between p-4">
+                    <div class="flex items-center">
+                        <a href="" class="text-white font-bold text-2xl">JobSeeker</a>
+                    </div>
+
+                    <!-- Toggle Button for Mobile Menu -->
+                    <button class="text-white md:hidden" onclick="toggleNavbar()">
+                        <i class="fas fa-bars"></i>
+                    </button>
+
+                    <!-- Desktop Navbar Links -->
+                    <div class="hidden md:flex md:items-center md:space-x-6">
+                        <a href="/jobseekprofile/" class="text-gray-300 hover:text-white">Profile</a>
+                        <a href="/findJob/" class="text-gray-300 hover:text-white">Find Jobs</a>
+                        <a href="/jobseekApplications/" class="text-gray-300 hover:text-white">My Applictions</a>
+                      
+                        <a href="/logout/" class="text-gray-300 hover:text-white">Logout</a>
+                    </div>
+
+                    <!-- Mobile Menu -->
+                    <div id="mobile-menu" class="hidden md:hidden w-full bg-blue-900 text-white mt-4">
+                        <a href="#" class="block px-4 py-2 hover:bg-blue-800">Profile</a>
+                        <a href="#" class="block px-4 py-2 hover:bg-blue-800">Find Jobs</a>
+                        <a href="#" class="block px-4 py-2 hover:bg-blue-800">Logout</a>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Hero Content -->
+            <div class="relative h-full flex items-center justify-center text-center text-white px-4">
+                <div>
+                    <h2 class="text-3xl md:text-4xl font-bold">Welcome Back,{{user.name}}</h2>
+                    <p class="mt-4 text-md md:text-lg">Discover new job opportunities that match your skills and interests.</p>
+                    <a href="#features" class="mt-6 inline-block bg-yellow-400 text-black px-4 py-2 md:px-6 md:py-3 rounded hover:bg-yellow-500">Explore Features</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="py-12 px-4 bg-white">
+            <div class="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <img src="https://images.pexels.com/photos/3184357/pexels-photo-3184357.jpeg" alt="About Project" class="w-full rounded-lg">
+                </div>
+                <div class="flex flex-col justify-center">
+                    <h3 class="text-2xl md:text-3xl font-bold text-blue-700">About JobSeeker Project</h3>
+                    <p class="mt-4 text-sm md:text-base">
+                        The JobSeeker platform is designed to connect job seekers with potential employers. It provides a seamless experience for users to create and manage profiles, search for job listings, and apply to relevant opportunities. This dashboard offers a personalized space where you can explore job openings that match your profile, receive recommendations, and track your applications. Built with an intuitive interface and efficient backend technology, JobSeeker aims to simplify the job-hunting process, making it easy and effective.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dashboard Features Section -->
+        <section id="features" class="py-12 px-4 bg-yellow-400 text-black">
+            <div class="container mx-auto text-center">
+                <h3 class="text-2xl md:text-3xl font-bold">Dashboard Features</h3>
+                <p class="mt-2 mb-8 text-sm md:text-base">Explore tools and features designed to enhance your job search experience.</p>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                    <!-- Feature Card 1 -->
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <i class="fas fa-user-circle text-blue-700 text-2xl md:text-3xl mb-4"></i>
+                        <h4 class="text-lg md:text-xl font-bold">Profile Management</h4>
+                        <p class="mt-2 text-sm md:text-base">Keep your profile updated with skills, experience, and qualifications to attract the right employers.</p>
+                    </div>
+                    <!-- Feature Card 2 -->
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <i class="fas fa-search text-blue-700 text-2xl md:text-3xl mb-4"></i>
+                        <h4 class="text-lg md:text-xl font-bold">Advanced Job Search</h4>
+                        <p class="mt-2 text-sm md:text-base">Use filters and keywords to find jobs that match your expertise and career goals.</p>
+                    </div>
+                    <!-- Feature Card 3 -->
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <i class="fas fa-tasks text-blue-700 text-2xl md:text-3xl mb-4"></i>
+                        <h4 class="text-lg md:text-xl font-bold">Application Tracker</h4>
+                        <p class="mt-2 text-sm md:text-base">Track the status of your job applications and receive updates on the hiring process.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="bg-black text-white py-4 text-center">
+            <p>&copy; 2024 JobSeeker. All rights reserved.</p>
+        </footer>
+
+    </body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Provider Profile</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- Navbar -->
+    <nav class="bg-blue-700 text-white py-5 shadow-md">
+        <div class="container mx-auto flex justify-between items-center px-6">
+            <a href="" class="text-3xl font-bold hover:text-yellow-400 transition duration-300">JobProvider</a>
+            <ul class="flex space-x-6">
+                <li><a href="/jobprovideindex/" class="hover:text-yellow-400 transition duration-300">Home</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Profile Section -->
+    <div class="container mx-auto p-8 mt-8 bg-white shadow-lg rounded-lg">
+        <h1 class="text-4xl font-extrabold text-blue-700 mb-8 text-center">Profile for {{ user.name }}</h1>
+
+        {% if profile %}
+            <div class="bg-gray-50 p-8 rounded-lg shadow-md">
+                <div class="flex items-center space-x-4 mb-6">
+                    {% if profile.company_logo %}
+                        <img src="{{ profile.company_logo.url }}" alt="Company Logo" class="w-24 h-24 rounded-full shadow-lg">
+                    {% endif %}
+                    <h2 class="text-3xl font-semibold text-blue-600">{{ user.company_name }}</h2>
+                </div>
+                <div class="space-y-4 text-lg text-gray-700">
+                    <p><span class="font-semibold text-blue-600">Email:</span> {{ user.email }}</p>
+                    <p><span class="font-semibold text-blue-600">Phone:</span> {{ user.phone_number }}</p>
+                    <p><span class="font-semibold text-blue-600">Description:</span> {{ profile.company_description }}</p>
+                    <p><span class="font-semibold text-blue-600">Address:</span> {{ profile.address }}</p>
+                </div>
+                <div class="mt-8 text-center">
+                    <a href="/jobprovidereditprofile/" class="bg-blue-600 text-white px-6 py-2 rounded-full font-semibold hover:bg-blue-700 transition duration-300">
+                        Edit Profile
+                    </a>
+                </div>
+            </div>
+        {% else %}
+            <div class="bg-red-100 p-6 mb-8 rounded text-red-700 text-center font-semibold">
+                <p>Please complete your profile to display your details here.</p>
+            </div>
+
+            <div class="bg-gray-50 p-8 rounded-lg shadow-md">
+                <h2 class="text-3xl font-semibold text-blue-600 mb-6">Add Company Details</h2>
+                
+                <form method="post" enctype="multipart/form-data" class="space-y-6">
+                    {% csrf_token %}
+                    <div>
+                        <label for="company_description" class="block text-lg font-medium text-gray-700">Company Description:</label>
+                        <textarea id="company_description" name="description" required class="mt-1 p-4 border rounded-lg w-full focus:ring-blue-500 focus:border-blue-500 text-gray-700" placeholder="Describe your company"></textarea>
+                    </div>
+
+                    <div>
+                        <label for="company_logo" class="block text-lg font-medium text-gray-700">Company Logo:</label>
+                        <input type="file" id="company_logo" name="company_logo" accept=".png,.jpeg,.jpg" class="mt-2 p-3 border rounded-lg w-full focus:ring-blue-500 focus:border-blue-500" onchange="previewLogo(event)">
+                        <img id="logoPreview" class="w-32 h-32 mt-4 rounded shadow hidden" alt="Company Logo Preview">
+                    </div>
+
+                    <div>
+                        <label for="address" class="block text-lg font-medium text-gray-700">Address:</label>
+                        <textarea id="location" name="location" class="mt-1 p-4 border rounded-lg w-full focus:ring-blue-500 focus:border-blue-500 text-gray-700" placeholder="Your company address"></textarea>
+                    </div>
+
+                    <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded-full font-semibold hover:bg-blue-700 transition duration-300">Save Profile</button>
+                </form>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-blue-700 text-white py-5 text-center mt-12">
+        <p class="text-lg">&copy;2025 SmartHire. All rights reserved.</p>
+    </footer>
+
+    <!-- JavaScript for Logo Preview -->
+    <script>
+        function previewLogo(event) {
+            const logoPreview = document.getElementById('logoPreview');
+            logoPreview.src = URL.createObjectURL(event.target.files[0]);
+            logoPreview.classList.remove('hidden'); // Show the preview image
+        }
+    </script>
+
+</body>
+</html>

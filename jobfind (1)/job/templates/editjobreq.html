@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Job Requirement</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <!-- Navbar -->
+    <nav class="bg-blue-600 text-white py-4 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="" class="text-2xl font-bold">SmartHire</a>
+            <ul class="flex space-x-4">
+                <li><a href="/jobprovideindex/" class="hover:text-yellow-300">Home</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold text-blue-700 mb-6">Edit Job Requirement</h1>
+
+        <form action="" method="POST" class="bg-white p-6 rounded-lg shadow-md">
+            {% csrf_token %}
+            <div class="mb-4">
+                <label for="title" class="block text-gray-700 font-bold mb-2">Job Title</label>
+                <input type="text" id="title" name="title" value="{{ job.job_title }}" class="w-full px-3 py-2 border rounded focus:outline-none focus:border-blue-500" required>
+            </div>
+
+            <div class="mb-4">
+                <label for="description" class="block text-gray-700 font-bold mb-2">Job Description</label>
+                <textarea id="description" name="description" rows="5" class="w-full px-3 py-2 border rounded focus:outline-none focus:border-blue-500" required>{{ job.job_description }}</textarea>
+            </div>
+
+            <div class="mb-4">
+                <label for="status" class="block text-gray-700 font-bold mb-2">Status</label>
+                <select id="status" name="status" class="w-full px-3 py-2 border rounded focus:outline-none focus:border-blue-500">
+                    <option value="True" {% if job.status %}selected{% endif %}>Active</option>
+                    <option value="False" {% if not job.status %}selected{% endif %}>Inactive</option>
+                </select>
+            </div>
+
+            <div class="flex justify-between items-center">
+                <button type="submit" class="bg-blue-600 text-white font-semibold py-2 px-4 rounded hover:bg-blue-700">
+                    Save Changes
+                </button>
+                <a href="{% url 'viewjobs' %}" class="text-gray-600 hover:text-gray-800">Cancel</a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-blue-600 text-white py-4 text-center mt-12">
+        <p>&copy; 2025 SmartHire. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>

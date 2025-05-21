@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>JobSeeker Profile</title>
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    </head>
+    <body class="bg-gray-100 text-gray-800">
+        <!-- Navbar -->
+        <nav class="bg-blue-600 text-white py-4 shadow-md">
+            <div class="container mx-auto flex justify-between items-center">
+                <a href="" class="text-2xl font-bold">JobSeeker</a>
+                <ul class="flex space-x-4">
+                    <li><a href="/jonseekindex/" class="hover:text-yellow-300">Home</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <!-- Profile Section -->
+        <section class="container mx-auto my-8 p-6 bg-white rounded-lg shadow-md">
+            <h2 class="text-2xl font-bold mb-4 text-blue-600">Profile Information</h2>
+            <div class="mb-4">
+                <label class="block text-gray-600">Name:</label>
+                <p class="text-lg">{{ user.name }}</p>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-600">Email:</label>
+                <p class="text-lg">{{ user.email }}</p>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-600">Phone Number:</label>
+                <p class="text-lg">{{ user.phone_number }}</p>
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-600">Resume Status:</label>
+                {% if msg %}
+                <form  method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="file" name="resume_file" id="resume_file" accept=".pdf">
+                    <button type="submit" class="ml-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Upload Resume</button>
+                </form>
+                    
+                {% else %}
+                <p class="text-green-500">resume uploaded</p>
+                <p class="mt-2 text-sm text-gray-500">Current Resume: <a href="{{ msgi.resume_file.url }}" class="text-blue-500 underline">View</a></p>
+                {% endif %}
+            </div>
+            <div class="flex justify-end">
+                <a href="/jobseekereditprofile/" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Edit Profile</a>
+            </div>
+        </section>
+    </body>
+</html>

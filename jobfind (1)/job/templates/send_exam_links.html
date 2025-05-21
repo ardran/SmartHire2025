@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send Exam Links</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <h1 class="text-3xl font-bold text-blue-700 mb-6">Send Exam Links</h1>
+    <table class="min-w-full bg-white rounded-lg shadow-md">
+        <thead class="bg-blue-600 text-white">
+            <tr>
+                <th class="py-3 px-6 text-left">Job Title</th>
+                <th class="py-3 px-6 text-left">Applicant Name</th>
+                <th class="py-3 px-6 text-left">Email</th>
+                <th class="py-3 px-6 text-left">Select Exam</th>
+                <th class="py-3 px-6 text-left">Send Link</th>
+                <th class="py-3 px-6 text-left">Interview Link</th>
+            </tr>
+        </thead>
+        <tbody class="text-gray-700">
+            {% for application in applications %}
+                <tr class="border-b hover:bg-gray-100 transition">
+                    <td class="py-4 px-6">{{ application.job_requirements.job_title }}</td>
+                    <td class="py-4 px-6">{{ application.jobseeker.name }}</td>
+                    <td class="py-4 px-6">{{ application.jobseeker.email }}</td>
+                    <td class="py-4 px-6">
+                        <select name="exam_id" class="exam-select border rounded p-2">
+                            {% for exam in exams %}
+                                <option value="{{ exam.id }}">{{ exam.title }}, {{ exam.id }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    {% if exams %}
+                    <td class="py-4 px-6">
+                        <a href="#" onclick="sendExamLink({{ application.job_requirements.id }}, {{ application.jobseeker.id }}, this)"
+                           class="text-green-600 font-semibold hover:underline">
+                            Send Exam Link
+                        </a>
+                    </td>
+                    <td class="py-4 px-6">
+                        <a href="#" 
+                           onclick="sendInterviewLink({{ application.jobseeker.id }})" 
+                           class="text-green-600 font-semibold hover:underline">
+                            Send Interview Link
+                        </a>
+                    </td>
+                    {% else %}
+                    <td class="py-4 px-6">
+                        <p class="text-red-800">No exams available!</p>
+                        <a href="/createexamandquestions/" 
+                           class="text-green-600 font-semibold hover:underline">
+                            Click to create Exam
+                        </a>
+                    </td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- CSRF Token for AJAX -->
+    <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+
+    <script>
+        function sendExamLink(jobId, jobseekerId, linkElement) {
+            const examId = linkElement.closest('tr').querySelector('.exam-select').value;
+            fetch(`/send_exam_email/${jobId}/${jobseekerId}/?exam_id=${examId}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('input[name="csrfmiddlewaretoken"]').value,
+                    'Content-Type': 'application/json' // Optional: You might not need this if you're not sending JSON data in the body.
+                },
+            })
+            .then(response => {
+                // Check if the response is a JSON object
+                if (response.ok) {
+                    return response.json(); // Parse JSON response
+                } else {
+                    return response.text().then(text => { throw new Error(text) });
+                }
+            })
+            .then(data => {
+                // Handle the response based on the status
+                if (data.status === 'success') {
+                    alert(data.message);
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while sending the link: ' + error.message);
+            });
+        }
+                
+        function sendInterviewLink(jobseekerId) {
+            fetch(`/send-interview-link/${jobseekerId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('input[name="csrfmiddlewaretoken"]').value,
+                    'Content-Type': 'application/json'
+                },
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.status === 'success') {
+                    alert(data.message);
+                } else {
+                    alert('Error: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while sending the link: ' + error.message);
+            });
+        }
+    </script>
+</body>
+</html>

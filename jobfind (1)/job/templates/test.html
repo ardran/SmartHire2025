@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Page with Scoring and Completion Check</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center h-screen">
+
+<div class="w-full max-w-2xl p-6 bg-white shadow-lg rounded-lg">
+    <h1 class="text-2xl font-bold mb-4">Exam</h1>
+    <div id="timer" class="text-right text-red-600 font-bold mb-2">Time Left: <span id="timeLeft">00:00</span></div>
+    
+    <div id="questionContainer">
+        <!-- Questions will be dynamically populated here -->
+    </div>
+    
+    <div class="flex justify-between mt-4">
+        <button id="prevBtn" class="bg-blue-500 text-white px-4 py-2 rounded" onclick="prevQuestion()">Previous</button>
+        <button id="nextBtn" class="bg-blue-500 text-white px-4 py-2 rounded" onclick="nextQuestion()">Next</button>
+    </div>
+
+    <button id="finishBtn" class="w-full bg-green-500 text-white px-4 py-2 rounded mt-4" onclick="finishExam()">Finish Exam</button>
+
+    <div id="cheatWarning" class="text-red-600 font-bold mt-4 hidden">Suspicious typing behavior detected! Exiting the exam.</div>
+    <div id="result" class="text-green-600 font-bold mt-4 hidden"></div>
+</div>
+
+<script>
+// Sample questions array
+const questions = [
+    { text: "What is the capital of France?", answer: "", correctAnswer: "Paris", score: 0 },
+    { text: "Explain the theory of relativity.", answer: "", correctAnswer: "Theory of relativity is the scientific theory developed by Albert Einstein.", score: 0 },
+    { text: "Describe the process of photosynthesis.", answer: "", correctAnswer: "Photosynthesis is the process by which plants make their food using sunlight.", score: 0 },
+];
+
+// Variables
+let currentQuestionIndex = 0;
+let startTime = new Date();
+let totalTime = 5 * 60; // 5 minutes in seconds
+let typingSpeeds = [];
+let typingStartTime = new Date();
+let lastTextLength = 0;
+let examFinished = false;  // Flag to prevent multiple finish attempts
+
+// Initialize page
+window.onload = () => {
+    showQuestion(currentQuestionIndex);
+    startTimer();
+};
+
+// Display the question
+function showQuestion(index) {
+    document.getElementById("questionContainer").innerHTML = `
+        <h2 class="text-lg font-semibold mb-2">Question ${index + 1}</h2>
+        <p class="mb-4">${questions[index].text}</p>
+        <textarea id="answer" class="w-full p-2 border rounded h-32" placeholder="Write your answer here..."
+            oninput="analyzeTypingSpeed(event)">${questions[index].answer}</textarea>
+    `;
+    document.getElementById("prevBtn").disabled = index === 0;
+    document.getElementById("nextBtn").disabled = index === questions.length - 1;
+}
+
+// Timer function
+function startTimer() {
+    const timer = setInterval(() => {
+        if (examFinished) {
+            clearInterval(timer);
+            return;
+        }
+        let timeElapsed = Math.floor((new Date() - startTime) / 1000);
+        let timeLeft = totalTime - timeElapsed;
+        let minutes = Math.floor(timeLeft / 60).toString().padStart(2, '0');
+        let seconds = (timeLeft % 60).toString().padStart(2, '0');
+        document.getElementById("timeLeft").innerText = `${minutes}:${seconds}`;
+        
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            alert("Time's up! Your answers have been submitted.");
+            finishExam();
+        }
+    }, 1000);
+}
+
+// Analyze typing speed and check for copy-pasting
+function analyzeTypingSpeed(event) {
+    let currentText = event.target.value;
+    let typingEndTime = new Date();
+    let timeTaken = (typingEndTime - typingStartTime) / 1000; // seconds
+    typingStartTime = typingEndTime;
+    typingSpeeds.push(timeTaken);
+
+    // Detect if text suddenly increased significantly (possible copy-paste)
+    if (currentText.length - lastTextLength > 50) {
+        document.getElementById("cheatWarning").classList.remove("hidden");
+        alert("Copy-paste detected! Exiting the exam.");
+        finishExam();
+    }
+    lastTextLength = currentText.length;
+
+    questions[currentQuestionIndex].answer = currentText;
+}
+
+// Calculate the score based on correct answers
+function calculateScore() {
+    let totalScore = 0;
+    questions.forEach((question) => {
+        if (question.answer.trim().toLowerCase() === question.correctAnswer.toLowerCase()) {
+            question.score = 1; // Each correct answer gives 1 point
+        } else {
+            question.score = 0;
+        }
+        totalScore += question.score;
+    });
+    return totalScore;
+}
+
+// Finish exam and check if all questions are completed
+function finishExam() {
+    if (examFinished) return;  // Prevent multiple attempts to finish the exam
+
+    // Check if all questions have been answered
+    let allAnswered = questions.every(q => q.answer.trim().length > 0);
+    if (!allAnswered) {
+        alert("Please answer all questions before finishing the exam.");
+        return;
+    }
+
+    let score = calculateScore();
+    document.getElementById("result").classList.remove("hidden");
+    document.getElementById("result").innerText = `Exam finished! Your score: ${score} out of ${questions.length}`;
+    document.getElementById("cheatWarning").classList.add("hidden");
+    examFinished = true;
+}
+
+// Pagination
+function nextQuestion() {
+    if (currentQuestionIndex < questions.length - 1) {
+        currentQuestionIndex++;
+        showQuestion(currentQuestionIndex);
+    }
+}
+
+function prevQuestion() {
+    if (currentQuestionIndex > 0) {
+        currentQuestionIndex--;
+        showQuestion(currentQuestionIndex);
+    }
+}
+
+</script>
+</body>
+</html>

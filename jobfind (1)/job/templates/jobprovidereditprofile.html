@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile | Job Provider</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans">
+
+    <!-- Navbar -->
+    <nav class="bg-blue-700 text-white py-5 shadow-md">
+        <div class="container mx-auto flex justify-between items-center px-6">
+            <a href="" class="text-3xl font-bold hover:text-yellow-400 transition duration-300">JobProvider</a>
+            <ul class="flex space-x-6">
+                <li><a href="#" class="hover:text-yellow-400 transition duration-300">Home</a></li>
+                <li><a href="#" class="hover:text-yellow-400 transition duration-300">Jobs</a></li>
+                <li><a href="/jobproviderprofile/" class="hover:text-yellow-400 transition duration-300">Profile</a></li>
+                <li><a href="#" class="hover:text-yellow-400 transition duration-300">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Edit Profile Form -->
+    <div class="container mx-auto p-8 mt-10 bg-white rounded-lg shadow-lg">
+        <h1 class="text-3xl font-extrabold text-blue-700 mb-8 text-center">Edit Profile</h1>
+
+        <form method="post" enctype="multipart/form-data" class="space-y-6">
+            {% csrf_token %}
+            
+            <!-- Name Field -->
+            <div>
+                <label for="name" class="block text-lg font-semibold text-gray-700">Name:</label>
+                <input type="text" id="name" name="name" value="{{ user.name }}" class="mt-1 p-3 border rounded-lg w-full focus:ring-blue-500 focus:border-blue-500 text-gray-700" required>
+            </div>
+
+            <!-- Company Name Field -->
+            <div>
+                <label for="company_name" class="block text-lg font-semibold text-gray-700">Company Name:</label>
+                <input type="text" id="company_name" name="company_name" value="{{ user.company_name }}" class="mt-1 p-3 border rounded-lg w-full focus:ring-blue-500 focus:border-blue-500 text-gray-700" required>
+            </div>
+
+            <!-- Email Field -->
+            <div>
+                <label for="email" class="block text-lg font-semibold text-gray-700">Email:</label>
+                <input type="email" id="email" name="email" value="{{ user.email }}" class="mt-1 p-3 border rounded-lg w-full focus:ring-blue-500 focus:border-blue-500 text-gray-700" required>
+            </div>
+
+            <!-- Password Field -->
+            <div>
+                <label for="password" class="block text-lg font-semibold text-gray-700">Password:</label>
+                <input type="password" id="password" name="password" value="{{ user.password }}" class="mt-1 p-3 border rounded-lg w-full focus:ring-blue-500 focus:border-blue-500 text-gray-700" required>
+            </div>
+
+            <!-- Company Description Field -->
+            <div>
+                <label for="description" class="block text-lg font-semibold text-gray-700">Company Description:</label>
+                <textarea id="description" name="description" class="mt-1 p-3 border rounded-lg w-full focus:ring-blue-500 focus:border-blue-500 text-gray-700" required>{{ profile.company_description }}</textarea>
+            </div>
+
+            <!-- Company Logo Field -->
+            <div>
+                <label for="company_logo" class="block text-lg font-semibold text-gray-700">Company Logo:</label>
+                <input type="file" id="company_logo" name="company_logo" accept=".png, .jpg, .jpeg" class="mt-1 p-3 border rounded-lg w-full focus:ring-blue-500 focus:border-blue-500" onchange="previewLogo(event)">
+                {% if profile.company_logo %}
+                    <img id="logoPreview" src="{{ profile.company_logo.url }}" alt="Company Logo Preview" class="w-32 h-32 mt-4 rounded-full shadow-md">
+                {% else %}
+                    <img id="logoPreview" class="w-32 h-32 mt-4 rounded-full shadow-md hidden">
+                {% endif %}
+            </div>
+
+            <!-- Address Field -->
+            <div>
+                <label for="location" class="block text-lg font-semibold text-gray-700">Address:</label>
+                <textarea id="location" name="location" class="mt-1 p-3 border rounded-lg w-full focus:ring-blue-500 focus:border-blue-500 text-gray-700">{{ profile.address }}</textarea>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="text-center">
+                <button type="submit" class="bg-blue-600 text-white px-6 py-3 rounded-full font-semibold hover:bg-blue-700 transition duration-300 w-full md:w-1/2">
+                    Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-blue-700 text-white py-5 text-center mt-12">
+        <p class="text-lg">&copy; 2025 SmartHire. All rights reserved.</p>
+    </footer>
+
+    <!-- JavaScript for Logo Preview -->
+    <script>
+        function previewLogo(event) {
+            const logoPreview = document.getElementById('logoPreview');
+            logoPreview.src = URL.createObjectURL(event.target.files[0]);
+            logoPreview.classList.remove('hidden'); // Show the preview image
+        }
+    </script>
+
+</body>
+</html>
